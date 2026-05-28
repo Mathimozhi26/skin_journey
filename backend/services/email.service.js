@@ -1,21 +1,21 @@
 const nodemailer = require('nodemailer');
 
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
+const createTransporter = async () => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
 
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
-    },
-
-    tls: {
-      family: 4,
-      rejectUnauthorized: false
     }
   });
+
+  // Verify transporter
+  await transporter.verify();
+
+  console.log('✅ Gmail transporter ready');
+
+  return transporter;
 };
 
 const generateOTP = () => {
@@ -24,7 +24,7 @@ const generateOTP = () => {
 
 const sendOTPEmail = async (email, otp, name) => {
   try {
-    const transporter = createTransporter();
+    const transporter = await createTransporter();
 
     const info = await transporter.sendMail({
       from: `"Skin Journey 🌿" <${process.env.EMAIL_USER}>`,
@@ -74,34 +74,34 @@ const sendOTPEmail = async (email, otp, name) => {
     console.log('✅ OTP Email sent:', info.response);
 
   } catch (error) {
-    console.error('❌ Email send failed:', error.message);
+    console.error('❌ OTP Email send failed:', error);
     throw error;
   }
 };
 
 const sendWelcomeEmail = async (email, name) => {
   try {
-    const transporter = createTransporter();
+    const transporter = await createTransporter();
 
     const info = await transporter.sendMail({
-      from: `"CareSure-AI+ 🌿" <${process.env.EMAIL_USER}>`,
+      from: `"Skin Journey 🌿" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: 'Welcome to CareSure-AI+! 🌿✨',
+      subject: 'Welcome to Skin Journey! 🌿✨',
 
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #FFFDFB, #F8FAFC); padding: 40px; border-radius: 16px;">
           
           <div style="text-align: center;">
             <h1 style="color: #00A86B;">
-              🌿 Welcome to CareSure-AI+!
+              🌿 Welcome to Skin Journey!
             </h1>
 
             <p style="color: #1E293B; font-size: 16px;">
-              Hi ${name}! Your skin journey starts now. ✨
+              Hi ${name}! Your skin journey starts now ✨
             </p>
 
             <p style="color: #475569;">
-              Scan products, track your glow, and let our AI be your skincare bestie!
+              Scan products, track your glow, and let our AI guide your skincare journey.
             </p>
           </div>
 
@@ -112,7 +112,7 @@ const sendWelcomeEmail = async (email, name) => {
     console.log('✅ Welcome Email sent:', info.response);
 
   } catch (error) {
-    console.error('❌ Email send failed:', error.message);
+    console.error('❌ Welcome Email send failed:', error);
     throw error;
   }
 };
