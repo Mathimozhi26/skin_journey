@@ -1,4 +1,4 @@
-```json id="v9ijm1"
+
 {
   "name": "skin-journey-backend",
   "version": "1.0.0",
@@ -31,4 +31,4 @@
     "node": "20.x"
   }
 }
-```
+
